@@ -1,0 +1,32 @@
+body {
+    justify-content: center;
+    text-align: center;
+}
+
+.container {
+    position: relative;
+    margin: auto;
+    text-align: right;
+    height: 90%;
+    width: 70%;
+}
+
+#player_list {
+    margin-top: 30px;
+    background-color: rgb(172, 172, 172);
+    border-radius: 50px;   
+    padding: 20px;
+}
+
+ul {
+    margin: 0 auto;
+    text-align: center;
+}
+
+li {
+    display: inline-block;
+    font-size: 30px;
+    margin-left: 10px;
+    margin-right: 10px;
+    vertical-align: top;
+}
