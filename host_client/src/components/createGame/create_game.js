@@ -1,12 +1,24 @@
 import React, { Fragment } from "react";
+import { useNavigate } from "react-router-dom";
 
 const CreateGame = () => {
+    const navigate = useNavigate();
+
+    /**
+     * @description Randomly generate a 6 digit game_code
+     * @returns Integer
+     */
     const createGameCode = () => {
         const newGameCode = Math.floor(100000 + Math.random() * 900000);
-        console.log("Creating new game with code: " + newGameCode);
+        console.debug("Creating new game with code: " + newGameCode);
+
         return newGameCode;
     };
 
+    /**
+     * @description Attempt to create a game from the API using a randomly generated game code
+     * @returns Either a game or an error Json object
+     */
     const makeGame = async () => {
         try {
             const body = { 
@@ -14,7 +26,6 @@ const CreateGame = () => {
                 is_active: "true", 
                 is_playing: "false" 
             };
-            console.log(body);
 
             const response = await fetch(`/api/games`, {
                 method: "POST",
@@ -33,10 +44,38 @@ const CreateGame = () => {
         }
     };
 
+    /**
+     * @description Attempt to register a new game
+     * @param {Event} e 
+     */
+    const gameRegister = (e) => {
+        e.preventDefault();
+
+        makeGame()
+        .then(game => {
+            if (!game.error){
+                console.debug(game);
+                navigate("/lobby", { state: game });
+            } else {
+                handleError(game.error);
+            }
+        });
+
+    };
+
+    /**
+     * @description Handle errors from the API connections
+     * @param {String} error 
+     */
+     const handleError = (error) => {
+        //TODO - Handle 
+        console.error(error);
+    }
+
     return (
         <Fragment>
             <h1>Ayo why don't you create a game while you're here :^)</h1>
-            <button onClick={makeGame}>Create Game</button>
+            <button onClick={gameRegister}>Create Game</button>
         </Fragment>
     );
 };
