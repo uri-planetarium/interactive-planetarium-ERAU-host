@@ -117,9 +117,9 @@ module.exports = function(app, pool, path) {
         }
     });
 
-    app.get("*", (req, res) => {
-        res.sendFile(path.join(__dirname, "../host_client/build/index.html"));
-    })
+    // app.get("*", (req, res) => {
+    //     res.sendFile(path.join(__dirname, "../host_client/build/index.html"));
+    // })
 }
 
 
