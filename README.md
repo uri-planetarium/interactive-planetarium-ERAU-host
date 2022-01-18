@@ -80,7 +80,7 @@
 
 <h2>For Production</h2>
 
-  <h4>1. Install Heroku if you haven't already</h4>
+  <h4>1. Install Heroku (if you haven't already)</h4>
   
   First install `snap`
   
