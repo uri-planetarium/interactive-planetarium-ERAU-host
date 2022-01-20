@@ -5,7 +5,10 @@ import pRetry from "p-retry";
 // Constants
 const GAME_CREATE_RETRIES = 10;
 
-//Component
+/**
+ * @description the CreateGame component for the host_client
+ * @returns Fragment
+ */
 const CreateGame = () => {
     const navigate = useNavigate();
 

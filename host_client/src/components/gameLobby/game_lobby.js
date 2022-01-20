@@ -2,7 +2,10 @@ import React, { Fragment, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import "./game_lobby.css"
 
-//Component
+/**
+ * @description the GameLobby component for the host_client
+ * @returns Fragment
+ */
 const GameLobby = () => {
     const location = useLocation();
     const gameData = location.state;
