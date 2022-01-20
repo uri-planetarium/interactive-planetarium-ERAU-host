@@ -1,6 +1,11 @@
 import React, { Fragment } from "react";
 import { useNavigate } from "react-router-dom";
+import pRetry from "p-retry";
 
+// Constants
+const GAME_CREATE_RETRIES = 10;
+
+//Component
 const CreateGame = () => {
     const navigate = useNavigate();
 
@@ -10,10 +15,8 @@ const CreateGame = () => {
      */
     const createGameCode = () => {
         const newGameCode = Math.floor(100000 + Math.random() * 900000);
-        //return newGameCode % 2 == 0 ? 111112 : 222222;
 
-
-        console.debug("Creating new game with code: " + newGameCode);
+        console.debug(`Creating new game with code:  ${newGameCode}`);
 
         return newGameCode;
     };
@@ -51,14 +54,16 @@ const CreateGame = () => {
      */
     const gameRegister = (e) => {
         e.preventDefault();
-        
-        makeGame()
+
+        pRetry(makeGame, {
+            onFailedAttempt: error => {
+                console.error(`${error.attemptNumber} game creation attempts failed. There are ${error.retriesLeft} retries left.`);
+            }, retries: GAME_CREATE_RETRIES
+        })
         .then(game => {
             navigate("/lobby", { state: game });
         })
-        .catch(error => {
-            handleError(error);
-        });
+        .catch(error => handleError(error));
     };
 
     /**
