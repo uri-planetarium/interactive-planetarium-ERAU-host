@@ -22,7 +22,7 @@
 
 <h4>2. Install npm dependencies</h4>
 
-  Be sure to do this in the root directory and the `host_client` folder
+  Be sure to do this in the root directory and the `host_client` folder.
 
   ```
   npm install
@@ -30,13 +30,13 @@
 
 <h4>3. Setup Postgres (if you haven't already)</h4> 
   
-  Setup Postgres. Here's a [link](https://www.digitalocean.com/community/tutorials/how-to-install-postgresql-on-ubuntu-20-04-quickstart) that might be helpful for this process
+  Setup Postgres. Here's a [link](https://www.digitalocean.com/community/tutorials/how-to-install-postgresql-on-ubuntu-20-04-quickstart) that might be helpful for this process.
 
   ```
   sudo apt install postgresql postgresql-contrib
   ```
 
-  Then create the database and tables. These commands can be found in the `database.sql` file of [this repository](https://github.com/uri-planetarium/interactive-planetarium-ERAU)'s root folder
+  Then create the database and tables. These commands can be found in the `database.sql` file of [this repository](https://github.com/uri-planetarium/interactive-planetarium-ERAU)'s root folder.
   
 <h4>4. Declare your environment variables</h4>
 
@@ -44,7 +44,7 @@
  
   ```
   PG_USER = your_username
-  PG_PASSWROD = your_password
+  PG_PASSWORD = your_password
   PG_HOST = localhost
   PG_DATABASE = planetarium_uri_db
   PG_PORT = 5432
@@ -52,7 +52,7 @@
   
 <h4>5. (Optional) Install nodemon</h4>
   
-  This allows you to write code for the server and have it automatically refresh each time
+  This allows you to write code for the server and have it automatically refresh each time.
 
   ```
   npm install -g nodemon
@@ -66,7 +66,7 @@
   npm start
   ```  
   
-  The above can be replaced with `nodemon index.js` if you installed that
+  The above can be replaced with `nodemon index.js` if you installed that.
   
   In the `host_client` folder...
   
@@ -74,7 +74,7 @@
   npm start
   ```
  
-  React's default start script automatically updates when you make changes
+  React's default start script automatically updates when you make changes.
   
 <br/>
 
@@ -82,13 +82,13 @@
 
   <h4>1. Install Heroku (if you haven't already)</h4>
   
-  First install `snap`
+  First install `snap`.
   
   ```
   sudo apt install snapd
   ```
   
-  Then install and login to Heroku's CLI. [Here's](https://devcenter.heroku.com/articles/heroku-cli) Heroku's initial setup page for reference
+  Then install and login to Heroku's CLI. [Here's](https://devcenter.heroku.com/articles/heroku-cli) Heroku's initial setup page for reference.
   
   ```
   sudo snap install --classic heroku
@@ -96,7 +96,7 @@
   heroku login
   ```
   
-  `heroku login` opens up a login webpage. If working in a virualbox, `heroku login -i` will allow you to sign in through the terminal
+  `heroku login` opens up a login webpage. If working in a virualbox, `heroku login -i` will allow you to sign in through the terminal.
   
 <h4>2. Git remote the Heroku Github Repository</h4>
   
@@ -106,7 +106,8 @@
   
 <h4>3. Sync the pushes to both Github Repositories</h4>
   
-  Syncing the pushes between this Github repository and the Heroku one allows you to push your code once and update both repositories
+  <strike>
+  Syncing the pushes between this Github repository and the Heroku one allows you to push your code once and update both repositories.
   
   ```
   git remote add both https://github.com/uri-planetarium/interactive-planetarium-ERAU-host.git
@@ -114,7 +115,13 @@
   git remote set-url --add --push both https://git.heroku.com/erau-interplanet-host.git
   ```
   
-  When pushing changes, `git push both` will push committed changes to both repositories
+  When pushing changes, `git push both` will push committed changes to both repositories.
+  </strike>
+  
+  ```diff
+  ! This is no longer necessary! 
+  ! Recent Changes have allowed pushing to the main branch to automatically deploy changes to Heroku !
+  ```
 
 <br/>
 
