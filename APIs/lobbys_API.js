@@ -1,15 +1,16 @@
 module.exports = function(app, pool, path) {
     /* POST (CREATE) */
-    app.post("/api/lobbys/:game_id", async (req, res) => {
+    /* Create a new player in a game lobby */
+    app.post("/api/lobbys/:game_code", async (req, res) => {
         try {
-            const { game_id } = req.params;
+            const { game_code } = req.params;
             const { player_name } = req.body;
             
             pool.query(
                 "INSERT INTO lobbys \
-                (game_id, player_name) \
+                (game_code, player_name) \
                 VALUES($1, $2) RETURNING *",
-                [game_id, player_name],
+                [game_code, player_name],
                 (err, result) => {
                     if (err) {
                         console.error('Error executing query', err.stack);
@@ -25,14 +26,15 @@ module.exports = function(app, pool, path) {
     });
    
     /* GET (READ) */
-    app.get("/api/lobbys/:game_id/:player_id", async (req, res) => {
+    /* Get all the data of a specific player from a specific game lobby */
+    app.get("/api/lobbys/:game_code/:player_id", async (req, res) => {
         try {
-            const { game_id, player_id } = req.params;
+            const { game_code, player_id } = req.params;
 
             pool.query(
                 "SELECT * FROM lobbys \
-                WHERE game_id = $1 AND player_id = $2",
-                [game_id, player_id],
+                WHERE game_code = $1 AND player_id = $2",
+                [game_code, player_id],
                 (err, result) => {
                     if (err) {
                         console.error('Error executing query', err.stack);
@@ -48,14 +50,15 @@ module.exports = function(app, pool, path) {
     });
    
     /* GET ALL (READ ALL) */
-    app.get("/api/lobbys/:game_id", async (req, res) => {
+    /* Get all players from a specific lobby */
+    app.get("/api/lobbys/:game_code", async (req, res) => {
         try {
-            const { game_id } = req.params;
+            const { game_code } = req.params;
 
             pool.query(
                 "SELECT * FROM lobbys \
-                WHERE game_id = $1",
-                [game_id],
+                WHERE game_code = $1",
+                [game_code],
                 (err, result) => {
                     if (err) {
                         console.error('Error executing query', err.stack);
@@ -71,15 +74,16 @@ module.exports = function(app, pool, path) {
     });
 
     /* PUT (UPDATE) */
-    app.put("/api/lobbys/:game_id/:player_id", async (req, res) => {
+    /* Change the name of a player in the lobby */
+    app.put("/api/lobbys/:game_code/:player_id", async (req, res) => {
         try {
-            const { game_id, player_id } = req.params;
+            const { game_code, player_id } = req.params;
             const { player_name } = req.body;
 
             pool.query(
                 "UPDATE lobbys SET player_name = $1 \
-                WHERE game_id = $2 AND player_id = $3",
-                [player_name, game_id, player_id],
+                WHERE game_code = $2 AND player_id = $3",
+                [player_name, game_code, player_id],
                 (err, result) => {
                     if (err) {
                         console.error('Error executing query', err.stack);
@@ -95,14 +99,15 @@ module.exports = function(app, pool, path) {
     });
    
     /* DELETE (DELETE) */
-    app.delete("/api/:game_id/:player_id", async (req, res) => {
+    /* Delete a player from a specific game lobby */
+    app.delete("/api/:game_code/:player_id", async (req, res) => {
         try {
-            const { game_id, player_id } = req.params;
+            const { game_code, player_id } = req.params;
 
             pool.query(
                 "DELETE FROM lobbys WHERE \
-                game_id = $1 AND player_id = $2",
-                [game_id, player_id],
+                game_code = $1 AND player_id = $2",
+                [game_code, player_id],
                 (err, result) => {
                     if (err) {
                         console.error('Error executing query', err.stack);
@@ -116,10 +121,6 @@ module.exports = function(app, pool, path) {
             console.error(error.message);
         }
     });
-
-    // app.get("*", (req, res) => {
-    //     res.sendFile(path.join(__dirname, "../host_client/build/index.html"));
-    // })
 }
 
 

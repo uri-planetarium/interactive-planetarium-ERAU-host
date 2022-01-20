@@ -23,8 +23,6 @@ const CreateGame = () => {
         try {
             const body = { 
                 game_code: createGameCode(), 
-                is_active: "true", 
-                is_playing: "false" 
             };
 
             const response = await fetch(`/api/games`, {
@@ -54,7 +52,6 @@ const CreateGame = () => {
         makeGame()
         .then(game => {
             if (!game.error){
-                console.debug(game);
                 navigate("/lobby", { state: game });
             } else {
                 handleError(game.error);
