@@ -10,6 +10,9 @@ const CreateGame = () => {
      */
     const createGameCode = () => {
         const newGameCode = Math.floor(100000 + Math.random() * 900000);
+        //return newGameCode % 2 == 0 ? 111112 : 222222;
+
+
         console.debug("Creating new game with code: " + newGameCode);
 
         return newGameCode;
@@ -35,10 +38,10 @@ const CreateGame = () => {
             if (!response.error) {
                 return response;
             } else {
-                return { error: "Error: " + response.error.code };
+                throw new Error(response.error.code);
             }
         } catch (error) {
-            return { error: "Error: " + error.message };
+            throw new Error(error.message);
         }
     };
 
@@ -48,16 +51,14 @@ const CreateGame = () => {
      */
     const gameRegister = (e) => {
         e.preventDefault();
-
+        
         makeGame()
         .then(game => {
-            if (!game.error){
-                navigate("/lobby", { state: game });
-            } else {
-                handleError(game.error);
-            }
+            navigate("/lobby", { state: game });
+        })
+        .catch(error => {
+            handleError(error);
         });
-
     };
 
     /**
