@@ -132,8 +132,21 @@
 <h2>Web UI-API Interactions  (Subject to change)</h2>
 
 <p align="center" >
-  <img src="https://github.com/uri-planetarium/interactive-planetarium-ERAU/blob/main/assets/Web-UI-API-interactions.png">
+  <img src="https://github.com/uri-planetarium/interactive-planetarium-ERAU/blob/main/assets/Web-UI-API-Interactions.png">
 </p>
+
+<br/>
+
+<h2>Socket.io Room Connections  (Subject to change)</h2>
+
+<p align="center" >
+  <img src="https://github.com/uri-planetarium/interactive-planetarium-ERAU/blob/main/assets/SocketIO-Room-Connections.png">
+</p>
+
+* <b>Host Client</b> creates a socket.io room named with `game_code`
+* These rooms are hosted in the <b>Host Server</b>
+* <b>Player Client</b> joins these rooms remotely given the `game_code` of the games they join
+* All rooms are hosted in the <b>Host Server</b> but only the related clients have access to the rooms
 
 <br/>
 
