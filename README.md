@@ -99,7 +99,7 @@
   `heroku login` opens up a login webpage. If working in a virualbox, `heroku login -i` will allow you to sign in through the terminal.
 
 ```diff
-- This is no longer necessary - 
+- The below is no longer necessary - 
 - Recent Changes have allowed pushing to the main branch to automatically deploy changes to Heroku -
 ```
   
