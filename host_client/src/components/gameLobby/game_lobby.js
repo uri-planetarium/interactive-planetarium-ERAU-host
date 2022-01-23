@@ -1,5 +1,6 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useContext } from "react";
 import { useLocation } from "react-router-dom";
+import { SocketContext } from "../../context/socket/socket";
 import "./game_lobby.css"
 
 /**
@@ -7,6 +8,7 @@ import "./game_lobby.css"
  * @returns Fragment
  */
 const GameLobby = () => {
+    const socket = useContext(SocketContext);
     const location = useLocation();
     const gameData = location.state;
 
