@@ -97,7 +97,13 @@
   ```
   
   `heroku login` opens up a login webpage. If working in a virualbox, `heroku login -i` will allow you to sign in through the terminal.
+
+```diff
+- This is no longer necessary - 
+- Recent Changes have allowed pushing to the main branch to automatically deploy changes to Heroku -
+```
   
+<strike>
 <h4>2. Git remote the Heroku Github Repository</h4>
   
   ```
@@ -106,7 +112,7 @@
   
 <h4>3. Sync the pushes to both Github Repositories</h4>
   
-  <strike>
+  
   Syncing the pushes between this Github repository and the Heroku one allows you to push your code once and update both repositories.
   
   ```
@@ -116,12 +122,7 @@
   ```
   
   When pushing changes, `git push both` will push committed changes to both repositories.
-  </strike>
-  
-  ```diff
-  ! This is no longer necessary! 
-  ! Recent Changes have allowed pushing to the main branch to automatically deploy changes to Heroku !
-  ```
+</strike>
 
 <br/>
 
