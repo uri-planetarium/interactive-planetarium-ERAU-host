@@ -1,6 +1,5 @@
 import React, { Fragment, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { SocketContext } from "../../context/socket/socket";
 import pRetry from "p-retry";
 import { makeGame } from "./create_game_reqs";
 
@@ -12,7 +11,6 @@ const GAME_CREATE_RETRIES = 10;
  * @returns Fragment
  */
 const CreateGame = () => {
-    const socket = useContext(SocketContext);
     const navigate = useNavigate();
 
     /**
@@ -49,20 +47,9 @@ const CreateGame = () => {
             }, retries: GAME_CREATE_RETRIES
         })
         .then(game => {
-            createSocketRoom(game.game_code);
             navigate("/lobby", { state: game });
         })
         .catch(error => handleError(error));
-    };
-
-    /**
-     * @description Join(Create) a socket room and listen for messages
-     * @param {integer} game_code 
-     */
-    const createSocketRoom = (game_code) => {
-        socket.emit("join room", game_code, "Host");
-
-        console.debug(`create_game - joined room ${game_code}`);
     };
 
     /**

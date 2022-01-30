@@ -100,7 +100,7 @@ module.exports = function(app, pool, path) {
    
     /* DELETE (DELETE) */
     /* Delete a player from a specific game lobby */
-    app.delete("/api/:game_code/:player_id", async (req, res) => {
+    app.delete("/api/lobbys/:game_code/:player_id", async (req, res) => {
         try {
             const { game_code, player_id } = req.params;
 
@@ -113,7 +113,7 @@ module.exports = function(app, pool, path) {
                         console.error('Error executing query', err.stack);
                         res.json({ error: err });
                     } else {
-                        res.json("Player " + player_id + " was deleted");
+                        res.json(player_id);
                     }
                 }
             );

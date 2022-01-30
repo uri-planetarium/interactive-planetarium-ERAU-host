@@ -1,8 +1,7 @@
-import React, { Fragment, useContext, useEffect, useState } from "react";
+import React, { Fragment, useContext, useEffect, useState, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { SocketContext } from "../../context/socket/socket";
-import { getAllPlayers } from "./game_lobby_reqs";
-import EditPlayer from "../editPlayer/edit_player";
+import { getAllPlayers, deletePlayer } from "./game_lobby_reqs";
 import "./game_lobby.css"
 
 /**
@@ -13,14 +12,14 @@ const GameLobby = () => {
     const socket = useContext(SocketContext);
     const location = useLocation();
     const [ players, setPlayers ] = useState([]);
+    var updatedPlayers = players;
     const game = location.state;
 
     useEffect(() => {
-        console.debug(`game_lobby - Game ${game.game_code} received`);
-        
+        createSocketRoom(game.game_code);
         let abortController = new AbortController();
 
-        setupSocketListeners(game.game_code);
+        setupSocketListeners();
 
         return () => {
             abortController.abort();
@@ -29,30 +28,67 @@ const GameLobby = () => {
 
     /**
      * @description Connect to the socket context and begin listening for players joining the room
-     * @param {string} game_code 
      */
-    const setupSocketListeners = (game_code) => {
-        attemptLobbyRetrieval(game_code);
+    const setupSocketListeners = () => {
+        attemptLobbyRetrieval(game.game_code);
 
-        socket.on("message", (message) => {
-            if (message === "player connected") {
-                attemptLobbyRetrieval(game_code);
-            }
-            
-            console.debug(`game_lobby - New message: ${message}`);
+        /* When a player has connected to the game, update the player list */
+        socket.on("player connected", () => {
+            attemptLobbyRetrieval(game.game_code);
+            console.debug("game_lobby - player joined socket room");
+        });
+
+        /* When a player chooses to leave game, remove them from lobby */
+        socket.on("player left game", player_id => {
+            attemptPlayerDelete(player_id);
+        });
+
+        /* When a player closed their tab, let us know */
+        socket.on("player disconnected", () => {
+            console.debug("game_lobby - player left socket room");
+        });
+    };
+
+    /**
+     * @description Attempt to delete the player from the lobby given their player_id and game_code
+     * @param {string} player_id 
+     */
+    const attemptPlayerDelete = (player_id) => {
+        deletePlayer(game.game_code, player_id)
+        .then(() => {
+            // let remainingPlayers = updatedPlayers.filter(player => player.player_id !== player_id);
+
+            // setPlayers(remainingPlayers);
+            // updatedPlayers = remainingPlayers;
+
+            attemptLobbyRetrieval(game.game_code);
+
+            socket.emit("removal success", player_id);
         })
+        .catch(error => handleError(error));
     };
 
     /**
      * @description Attempt to retrieve a list of all players that are in the game lobby
-     * @param {string} game_code 
      */
-    const attemptLobbyRetrieval = (game_code) => {
-        getAllPlayers(game_code)
+    const attemptLobbyRetrieval = () => {
+        getAllPlayers(game.game_code)
         .then(allPlayers => {
             setPlayers(allPlayers);
+            updatedPlayers = allPlayers;
         })
         .catch(error => handleError(error));
+    };
+
+
+    /**
+     * @description Join(Create) a socket room and listen for messages
+     * @param {integer} game_code 
+     */
+    const createSocketRoom = (game_code) => {
+        socket.emit("join room", game_code, "Host");
+
+        console.debug(`create_game - joined room ${game_code}`);
     };
 
     /**
@@ -70,8 +106,11 @@ const GameLobby = () => {
                 <button id="start_button">Start Game</button>
                 <div id="player_list">
                     <ul>
-                        { players.map(player => (
-                            <li key={player.player_id}> <EditPlayer player = { player }/></li>
+                        { updatedPlayers.map(player => (
+                            <li key={player.player_id} 
+                                onClick={() => attemptPlayerDelete(player.player_id)}>
+                                    {player.player_name}
+                            </li>
                         ))}
                     </ul>
                 </div>

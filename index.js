@@ -34,47 +34,53 @@ io.on('connection', socket => {
         playerID = player_id;
 
         socket.join(game_code);
-        socket.to(game_code).emit("message", "player connected");
+        socket.to(game_code).emit("player connected");
 
         /* Calculate how many users are in the room */
-        const clients = io.sockets.adapter.rooms.get(game_code);
-        const numClients = clients ? clients.size : 0;
+        // const clients = io.sockets.adapter.rooms.get(game_code);
+        // const numClients = clients ? clients.size : 0;
         
-        console.debug("~~~~~~~~ SOMETHING HAPPENED ~~~~~~~~");
-        console.debug(`
-            Player: ${player_id} \n
-            Socket User: ${socket.id} \n 
-            has joined room ${game_code}... \n
-            There are now ${numClients-1} players
-        `);
+        // console.debug(`
+        //     Player: ${player_id} \n
+        //     Socket User: ${socket.id} \n 
+        //     has joined room ${game_code}... \n
+        //     There are now ${numClients-1} players
+        // `);
     });
 
     /* When the game starts, send a message indicating so */
     socket.on("start game", () => {
-        socket.to(gameCode).emit("message", "game started");
+        socket.to(gameCode).emit("game start");
     });
 
-    /* When the browser closes, emit a goobye message to everyone before going */
-    socket.onclose = () => {
-        this.emit("disconnecting");
-        this.emit("disconnect");
-    };
+    /* When player want to leave the game, send a message to Host */
+    socket.on("leave game", () => {
+        socket.to(gameCode).emit("player left game", playerID);
+    });
+
+    /* When the player has been removed from the game, send a message to the player */
+    socket.on("removal success", removed_player_id => {
+        socket.to(gameCode).emit("you have been removed", removed_player_id);
+    });
+
+    socket.on("leave room", () => {
+        socket.leave(gameCode);
+    });
 
     /* Once leaving the page, emit a message to everyone saying goodbye */
     socket.on("disconnecting", () => {
-        socket.to(gameCode).emit("message", "player left");
+        socket.to(gameCode).emit("player disconnected");
 
         /* Calculate how many users are in the room */
-        const clients = io.sockets.adapter.rooms.get(gameCode);
-        const numClients = clients ? clients.size : 0;
+        // const clients = io.sockets.adapter.rooms.get(gameCode);
+        // const numClients = clients ? clients.size : 0;
         
-        console.debug("~~~~~~~~ SOMETHING HAPPENED ~~~~~~~~");
-        console.debug(`
-            Player: ${playerID} \n
-            Socket User: ${socket.id} \n 
-            is attempting to leave room ${gameCode}... \n
-            There are now ${numClients-2} players
-        `);
+        // console.debug(`
+        //     Player: ${playerID} \n
+        //     Socket User: ${socket.id} \n 
+        //     is attempting to leave room ${gameCode}... \n
+        //     There are now ${numClients-2} players
+        // `);
     });
 
     /* When a player disconnects, send a message indicating so */
@@ -83,6 +89,12 @@ io.on('connection', socket => {
             They left...
         `);
     });
+
+    /* When the browser closes, emit a goobye message to everyone before going */
+    socket.onclose = () => {
+        this.emit("disconnecting");
+        this.emit("disconnect");
+    };
 });
 
 require("./APIs/games_API")(app, pool, path);
