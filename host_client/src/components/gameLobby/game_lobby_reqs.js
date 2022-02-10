@@ -46,4 +46,26 @@ const deletePlayer = async (game_code, player_id) => {
     }
 };
 
-export { getAllPlayers, deletePlayer };
+/**
+ * @description Attempt to delete all players in a game given the game_code
+ * @param {string} game_code 
+ * @returns Either a message confirming the player deletion or an error Json object
+ */
+const deleteAllPlayers = async (game_code) => {
+    try {
+        const response = await fetch(`./api/lobbys/${game_code}`, {
+            method: "DELETE"
+        })
+        .then(response => response.json());
+
+        if (!response.error) {
+            return response;
+        } else {
+            throw new Error(response.error.code);
+        }
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+export { getAllPlayers, deletePlayer, deleteAllPlayers };

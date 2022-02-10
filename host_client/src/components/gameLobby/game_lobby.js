@@ -1,7 +1,7 @@
 import React, { Fragment, useContext, useEffect, useState, useRef } from "react";
-import { useLocation } from "react-router-dom";
+import { Navigate, useNavigate, useLocation } from "react-router-dom";
 import { SocketContext } from "../../context/socket/socket";
-import { getAllPlayers, deletePlayer } from "./game_lobby_reqs";
+import { getAllPlayers, deletePlayer, deleteAllPlayers } from "./game_lobby_reqs";
 import "./game_lobby.css"
 
 /**
@@ -11,6 +11,7 @@ import "./game_lobby.css"
 const GameLobby = () => {
     const socket = useContext(SocketContext);
     const location = useLocation();
+    const navigate = useNavigate();
     const [ players, setPlayers ] = useState([]);
     var updatedPlayers = players;
     const game = location.state;
@@ -69,6 +70,18 @@ const GameLobby = () => {
     };
 
     /**
+     * @description Attempt to delete all players from the lobby given the game_code
+     */
+    const attemptAllPlayersDelete = () => {
+        deleteAllPlayers(game.game_code)
+        .then(() => {
+            socket.emit("removal success", "all");
+
+            navigate("/endgame");
+        })
+    };
+
+    /**
      * @description Attempt to retrieve a list of all players that are in the game lobby
      */
     const attemptLobbyRetrieval = () => {
@@ -104,6 +117,7 @@ const GameLobby = () => {
             <h1>{game.game_code}</h1>
             <div class="container">
                 <button id="start_button">Start Game</button>
+                <button id="end_button" onClick={attemptAllPlayersDelete()}>End Game</button>
                 <div id="player_list">
                     <ul>
                         { updatedPlayers.map(player => (

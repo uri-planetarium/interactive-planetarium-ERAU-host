@@ -5,6 +5,7 @@ import './App.css';
 import { SocketContext, socket } from "./context/socket/socket"; 
 import CreateGame from "./components/createGame/create_game";
 import GameLobby from "./components/gameLobby/game_lobby";
+import EndGame from "./components/endGame/end_game";
 
 function App() {
     return (
@@ -13,6 +14,7 @@ function App() {
                 <Routes>
                     <Route path="/" element={<CreateGame />}/>
                     <Route path="/lobby" element={<GameLobby />}/>
+                    <Route path="/endgame" element={<EndGame />}/>
                 </Routes>
             </Router>
         </SocketContext.Provider>

@@ -121,6 +121,30 @@ module.exports = function(app, pool, path) {
             console.error(error.message);
         }
     });
+
+    /* DELETE (DELETE) */
+    /* Delete all players from a specific game lobby */
+    app.delete("/api/lobbys/:game_code/", async (req, res) => {
+        try {
+            const { game_code } = req.params;
+
+            pool.query(
+                "DELETE FROM lobbys WHERE \
+                game_code = $1",
+                [game_code],
+                (err, result) => {
+                    if (err) {
+                        console.error('Error executing query', err.stack);
+                        res.json({ error: err });
+                    } else {
+                        res.json("All players were deleted");
+                    }
+                }
+            );
+        } catch (error) {
+            console.error(error.message);
+        }
+    });
 }
 
 
