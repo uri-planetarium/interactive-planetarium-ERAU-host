@@ -6,7 +6,11 @@ const express = require("express"),
     http = require("http"),
     server = http.createServer(app),
     socket = require("socket.io"),
-    io = socket(server, { cors: { origin: "*" } }),
+    io = socket(server, { 
+        cors: (process.env.NODE_ENV === "production") ? "https://erau-interplanet-player.herokuapp.com/" : "http://localhost:3000" ,
+        methods: ["GET", "POST", "DELETE", "PUT"],
+        credentials: true
+    }),
     PORT = process.env.PORT || 5001;
 
 // middleware
