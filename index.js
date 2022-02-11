@@ -9,7 +9,7 @@ const express = require("express"),
     io = socket(server, { 
         cors: (process.env.NODE_ENV === "production") ? "https://erau-interplanet-player.herokuapp.com/" : "http://localhost:3000" ,
         methods: ["GET", "POST", "DELETE", "PUT"],
-        credentials: true
+        credentials: false
     }),
     PORT = process.env.PORT || 5001;
 
