@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import pRetry from "p-retry";
 import { makeGame } from "./create_game_reqs";
@@ -19,7 +19,11 @@ const CreateGame = () => {
      */
     const createGameCode = () => {
         const newGameCode = Math.floor(100000 + Math.random() * 900000);
-        console.debug(`Creating new game with code:  ${newGameCode}`);
+        console.debug(`create_game - Creating new game with code:  ${newGameCode}`);
+
+        /* For game_code retry testing */
+        //const answers = [111111, 222222, 333333, 444444, 555555, 666666, 777777]
+        //return answers[newGameCode % 7];
 
         return newGameCode;
     };
@@ -37,7 +41,7 @@ const CreateGame = () => {
         pRetry(() => makeGame(gameCode), {
             onFailedAttempt: error => {
                 console.error(
-                    `${error.attemptNumber} game creation attempts 
+                    `create_game - ${error.attemptNumber} game creation attempts 
                     failed. There are ${error.retriesLeft} retries left.
                 `);
             }, retries: GAME_CREATE_RETRIES
