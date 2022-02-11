@@ -79,6 +79,7 @@ const GameLobby = () => {
 
             navigate("/endgame");
         })
+        .catch(error => handleError(error));
     };
 
     /**
@@ -117,7 +118,7 @@ const GameLobby = () => {
             <h1>{game.game_code}</h1>
             <div class="container">
                 <button id="start_button">Start Game</button>
-                <button id="end_button" onClick={attemptAllPlayersDelete()}>End Game</button>
+                <button id="end_button" onClick={() => attemptAllPlayersDelete()}>End Game</button>
                 <div id="player_list">
                     <ul>
                         { updatedPlayers.map(player => (
