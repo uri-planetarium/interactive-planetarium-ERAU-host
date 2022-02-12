@@ -14,11 +14,10 @@ const GameLobby = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [ players, setPlayers ] = useState([]);
+    const [ game, setGame ] = useState(location.state);
     var updatedPlayers = players;
 
     useEffect(() => {
-        const game = location.state;
-
         createSocketRoom(game.game_code);
         let abortController = new AbortController();
 
