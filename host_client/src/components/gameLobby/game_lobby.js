@@ -112,12 +112,12 @@ const GameLobby = () => {
         console.error(error);
     };
 
-    /* When use tries to close tab, ask them if they are sure */
-    window.addEventListener("beforeunload",  (e) => {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        e.returnValue = '';
-    });
+    // /* When use tries to close tab, ask them if they are sure */
+    // window.addEventListener("beforeunload",  (e) => {
+    //     e.preventDefault();
+    //     e.stopImmediatePropagation();
+    //     e.returnValue = '';
+    // });
 
     return (
         <Fragment>
