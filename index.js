@@ -104,6 +104,10 @@ io.on('connection', socket => {
 require("./APIs/games_API")(app, pool, path);
 require("./APIs/lobbys_API")(app, pool, path);
 
+app.get('*', (request, response) => {
+    response.sendFile(path.join(__dirname, 'player_client', 'build', 'index.html'));
+});
+
 server.listen(PORT, () => {
     console.log(`Server has started on port ${PORT}`);
 })

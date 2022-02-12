@@ -94,7 +94,6 @@ const GameLobby = () => {
         .catch(error => handleError(error));
     };
 
-
     /**
      * @description Join(Create) a socket room and listen for messages
      * @param {integer} game_code 
@@ -112,6 +111,13 @@ const GameLobby = () => {
     const handleError = (error) => {
         console.error(error);
     };
+
+    /* When use tries to close tab, ask them if they are sure */
+    window.addEventListener("beforeunload",  (e) => {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        e.returnValue = '';
+    });
 
     return (
         <Fragment>
