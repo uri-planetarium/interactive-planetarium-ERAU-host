@@ -1,6 +1,7 @@
 import React, { Fragment, useContext, useEffect, useState, useRef } from "react";
 import { Navigate, useNavigate, useLocation } from "react-router-dom";
 import { SocketContext } from "../../context/socket/socket";
+import { getGameCache } from "../../cache/game_cache";
 import { getAllPlayers, deletePlayer, deleteAllPlayers } from "./game_lobby_reqs";
 import "./game_lobby.css"
 
@@ -14,10 +15,10 @@ const GameLobby = () => {
     const navigate = useNavigate();
     const [ players, setPlayers ] = useState([]);
     var updatedPlayers = players;
-    console.log(location.state);
-    const game = location.state;
 
     useEffect(() => {
+        const game = location.state;
+
         createSocketRoom(game.game_code);
         let abortController = new AbortController();
 
