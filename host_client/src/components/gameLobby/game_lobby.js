@@ -14,8 +14,8 @@ const GameLobby = () => {
     const navigate = useNavigate();
     const [ players, setPlayers ] = useState([]);
     var updatedPlayers = players;
+    console.log(location.state);
     const game = location.state;
-    console.log(game);
 
     useEffect(() => {
         createSocketRoom(game.game_code);
