@@ -1,6 +1,7 @@
 import React, { Fragment, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import pRetry from "p-retry";
+import { setGameCache } from "../../cache/game_cache";
 import { makeGame } from "./create_game_reqs";
 
 // Constants
@@ -47,7 +48,8 @@ const CreateGame = () => {
             }, retries: GAME_CREATE_RETRIES
         })
         .then(game => {
-            navigate("/lobby", { state: game });
+            setGameCache(game);
+            navigate("/lobby");
         })
         .catch(error => handleError(error));
     };

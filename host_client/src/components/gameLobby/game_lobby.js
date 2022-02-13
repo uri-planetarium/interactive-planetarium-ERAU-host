@@ -1,5 +1,5 @@
 import React, { Fragment, useContext, useEffect, useState, useRef } from "react";
-import { Navigate, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { SocketContext } from "../../context/socket/socket";
 import { getGameCache } from "../../cache/game_cache";
 import { getAllPlayers, deletePlayer, deleteAllPlayers } from "./game_lobby_reqs";
@@ -11,14 +11,21 @@ import "./game_lobby.css"
  */
 const GameLobby = () => {
     const socket = useContext(SocketContext);
-    const location = useLocation();
     const navigate = useNavigate();
     const [ players, setPlayers ] = useState([]);
-    const [ game, setGame ] = useState(location.state);
+    const game = useRef({});
     var updatedPlayers = players;
 
     useEffect(() => {
-        createSocketRoom(game.game_code);
+        const { cached_game_code, cached_is_active, cached_is_playing } = getGameCache().data;
+
+        game.current = {
+            game_code: cached_game_code,
+            is_active: cached_is_active,
+            is_playing: cached_is_playing
+        };
+
+        createSocketRoom(game.current.game_code);
         let abortController = new AbortController();
 
         setupSocketListeners();
@@ -32,11 +39,11 @@ const GameLobby = () => {
      * @description Connect to the socket context and begin listening for players joining the room
      */
     const setupSocketListeners = () => {
-        attemptLobbyRetrieval(game.game_code);
+        attemptLobbyRetrieval(game.current.game_code);
 
         /* When a player has connected to the game, update the player list */
         socket.on("player connected", () => {
-            attemptLobbyRetrieval(game.game_code);
+            attemptLobbyRetrieval(game.current.game_code);
             console.debug("game_lobby - player joined socket room");
         });
 
@@ -56,7 +63,7 @@ const GameLobby = () => {
      * @param {string} player_id 
      */
     const attemptPlayerDelete = (player_id) => {
-        deletePlayer(game.game_code, player_id)
+        deletePlayer(game.current.game_code, player_id)
         .then(() => {
             // let remainingPlayers = updatedPlayers.filter(player => player.player_id !== player_id);
 
@@ -74,7 +81,7 @@ const GameLobby = () => {
      * @description Attempt to delete all players from the lobby given the game_code
      */
     const attemptAllPlayersDelete = () => {
-        deleteAllPlayers(game.game_code)
+        deleteAllPlayers(game.current.game_code)
         .then(() => {
             socket.emit("removal success", "all");
 
@@ -87,7 +94,7 @@ const GameLobby = () => {
      * @description Attempt to retrieve a list of all players that are in the game lobby
      */
     const attemptLobbyRetrieval = () => {
-        getAllPlayers(game.game_code)
+        getAllPlayers(game.current.game_code)
         .then(allPlayers => {
             setPlayers(allPlayers);
             updatedPlayers = allPlayers;
@@ -122,7 +129,7 @@ const GameLobby = () => {
 
     return (
         <Fragment>
-            <h1>{game.game_code}</h1>
+            <h1>{game.current.game_code}</h1>
             <div class="container">
                 <button id="start_button">Start Game</button>
                 <button id="end_button" onClick={() => attemptAllPlayersDelete()}>End Game</button>
