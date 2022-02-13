@@ -16,6 +16,7 @@ const GameLobby = () => {
     const game = useRef({});
     var updatedPlayers = players;
 
+    //FIXME: This has caused "Unmounted" errors in the past
     useEffect(() => {
         const { cached_game_code, cached_is_active, cached_is_playing } = getGameCache().data;
 
@@ -75,6 +76,7 @@ const GameLobby = () => {
             socket.emit("removal success", player_id);
         })
         .catch(error => handleError(error));
+        //TODO: The user should receive an error modal if this becomes an error
     };
 
     /**
@@ -88,6 +90,7 @@ const GameLobby = () => {
             navigate("/endgame");
         })
         .catch(error => handleError(error));
+        //TODO: The user should receive an error modal if this becomes an error
     };
 
     /**
@@ -116,16 +119,18 @@ const GameLobby = () => {
      * @description Handle errors from the API connections
      * @param {String} error 
      */
+    //NOTE: Consider whether we even want a universal way to handle errors
     const handleError = (error) => {
         console.error(error);
     };
 
-    // /* When use tries to close tab, ask them if they are sure */
-    // window.addEventListener("beforeunload",  (e) => {
-    //     e.preventDefault();
-    //     e.stopImmediatePropagation();
-    //     e.returnValue = '';
-    // });
+    //TODO: The game should be set to inactive and kick all players when the page is left
+    /* When use tries to close tab, ask them if they are sure */
+    window.addEventListener("beforeunload",  (e) => {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        e.returnValue = '';
+    });
 
     return (
         <Fragment>

@@ -18,6 +18,7 @@ const CreateGame = () => {
      * @description Randomly generate a 6 digit game_code
      * @returns Integer
      */
+    // FIXME: This code gets really slow after the first few attempts, we should find a better option
     const createGameCode = () => {
         const newGameCode = Math.floor(100000 + Math.random() * 900000);
         console.debug(`create_game - Creating new game with code:  ${newGameCode}`);
@@ -48,16 +49,19 @@ const CreateGame = () => {
             }, retries: GAME_CREATE_RETRIES
         })
         .then(game => {
+            //NOTE: This currently saves the game to local storage. It might be better to send it as a state instead
             setGameCache(game);
             navigate("/lobby");
         })
         .catch(error => handleError(error));
+        //TODO: The user should receive an error modal if this becomes an error
     };
 
     /**
      * @description Handle errors from the API connections
      * @param {String} error 
      */
+    //NOTE: Consider whether we even want a universal way to handle errors
      const handleError = (error) => {
         //TODO - Handle 
         console.error(error);

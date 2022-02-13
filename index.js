@@ -104,6 +104,8 @@ io.on('connection', socket => {
 require("./APIs/games_API")(app, pool, path);
 require("./APIs/lobbys_API")(app, pool, path);
 
+//WARNING: This is really important, do not remove it
+// Without it, refreshing the page fails to reload it
 app.get('*', (request, response) => {
     response.sendFile(path.join(__dirname, 'host_client', 'build', 'index.html'));
 });
