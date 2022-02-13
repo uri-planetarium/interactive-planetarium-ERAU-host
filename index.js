@@ -105,7 +105,7 @@ require("./APIs/games_API")(app, pool, path);
 require("./APIs/lobbys_API")(app, pool, path);
 
 app.get('*', (request, response) => {
-    response.sendFile(path.join(__dirname, 'player_client', 'build', 'index.html'));
+    response.sendFile(path.join(__dirname, 'host_client', 'build', 'index.html'));
 });
 
 server.listen(PORT, () => {
