@@ -1,3 +1,4 @@
 # Ignore API keys
 /node_modules
 .env
+.vscode
