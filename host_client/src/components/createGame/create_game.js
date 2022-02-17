@@ -69,7 +69,7 @@ const CreateGame = () => {
 
     return (
         <Fragment>
-            <h1>Ayo why don't you create a game while you're here :^)</h1>
+            <h1>What would you like to do?</h1>
             <button onClick={gameRegister}>Create Game</button>
         </Fragment>
     );
