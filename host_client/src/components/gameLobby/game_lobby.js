@@ -83,6 +83,11 @@ const GameLobby = () => {
      * @description Attempt to delete all players from the lobby given the game_code
      */
     const attemptAllPlayersDelete = () => {
+        // TODO: Update this piece of code to allow for "Page close" functionality
+        /* To allow for removing all players on "Page close", The removal success socket message 
+         * should occur before the deleteAllPlayers method is called. This means that we must assume 
+         * the deleteAllPlayers method never fails. (This can be dangerous).
+         */
         deleteAllPlayers(game.current.game_code)
         .then(() => {
             socket.emit("removal success", "all");
@@ -131,6 +136,9 @@ const GameLobby = () => {
         e.stopImmediatePropagation();
         e.returnValue = '';
     });
+
+    // TODO: Add an event listener for the "onunload" functionality. run the "attemptAllPlayersDelete" method within it
+
 
     return (
         <Fragment>
