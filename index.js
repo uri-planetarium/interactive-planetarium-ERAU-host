@@ -4,6 +4,7 @@ const express = require("express"),
     path = require("path"),
     app = express(),
     http = require("http"),
+    fetch = require("node-fetch"),
     server = http.createServer(app),
     socket = require("socket.io"),
     io = socket(server, { 
@@ -11,7 +12,8 @@ const express = require("express"),
         methods: ["GET", "POST", "DELETE", "PUT"],
         credentials: false
     }),
-    PORT = process.env.PORT || 5001;
+    PORT = process.env.PORT || 5001
+    URL = (process.env.NODE_ENV === "production") ? "https://erau-interplanet-host.herokuapp.com/" : "http://localhost:5001";
 
 // middleware
 app.use(cors());
@@ -50,25 +52,73 @@ io.on('connection', socket => {
         //     has joined room ${game_code}... \n
         //     There are now ${numClients-1} players
         // `);
+
+        console.debug(`User ${playerID} joined room`);
     });
 
     /* When the game starts, send a message indicating so */
     socket.on("start game", () => {
         socket.to(gameCode).emit("game start");
+
+        console.debug("Game started");
     });
 
     /* When player want to leave the game, send a message to Host */
     socket.on("leave game", () => {
         socket.to(gameCode).emit("player left game", playerID);
+
+        console.debug("User requested to leave room");
     });
 
     /* When the player has been removed from the game, send a message to the player */
-    socket.on("removal success", removed_player_id => {
-        socket.to(gameCode).emit("you have been removed", removed_player_id);
+    socket.on("removal success", ({ removed_game_code, removed_player_id }) => {
+        try {
+            var response;
+
+            if (removed_player_id === "all") {
+                response = fetch(`${URL}/api/lobbys/${removed_game_code}`, {
+                    method: "DELETE"
+                })
+                .then(response => response.json());
+
+                if  (!response.error) {
+                    const body = { 
+                        "is_active": "false", 
+                        "is_playing": "false" 
+                    };
+
+                    response = fetch(`${URL}/api/games/${removed_game_code}`, {
+                        method: "PUT",
+                        headers: {"Content-Type": "application/json"},
+                        body: JSON.stringify(body)
+                    })
+                } else {
+                    throw new Error(response.error.code);
+                }
+            } else {
+                response = fetch(`${URL}/api/lobbys/${removed_game_code}/${removed_player_id}`, {
+                    method: "DELETE"
+                })
+                .then(response => response.json());
+            }
+    
+            if  (!response.error) {
+                socket.to(gameCode).emit("you have been removed", { 
+                    removed_game_code: removed_game_code, 
+                    removed_player_id: removed_player_id 
+                });
+            } else {
+                throw new Error(response.error.code);
+            }
+        } catch (error) {
+            throw new Error(error.message);
+        }
     });
 
     socket.on("leave room", () => {
         socket.leave(gameCode);
+        
+        console.debug("User has been successfullt removed from room");
     });
 
     /* Once leaving the page, emit a message to everyone saying goodbye */
@@ -85,13 +135,14 @@ io.on('connection', socket => {
         //     is attempting to leave room ${gameCode}... \n
         //     There are now ${numClients-2} players
         // `);
+
+        console.debug("User disconnecting");
     });
 
     /* When a player disconnects, send a message indicating so */
     socket.on("disconnect", () => {
-        console.debug(`
-            They left...
-        `);
+        
+        console.debug("User disconnected");
     });
 
     /* When the browser closes, emit a goobye message to everyone before going */

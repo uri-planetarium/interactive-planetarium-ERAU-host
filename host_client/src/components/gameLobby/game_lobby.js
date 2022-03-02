@@ -15,11 +15,10 @@ const GameLobby = () => {
     const [ players, setPlayers ] = useState([]);
     const game = useRef({});
     var updatedPlayers = players;
+    const { cached_game_code, cached_is_active, cached_is_playing } = getGameCache().data;
 
     //FIXME: This has caused "Unmounted" errors in the past
     useEffect(() => {
-        const { cached_game_code, cached_is_active, cached_is_playing } = getGameCache().data;
-
         game.current = {
             game_code: cached_game_code,
             is_active: cached_is_active,
@@ -64,18 +63,14 @@ const GameLobby = () => {
      * @param {string} player_id 
      */
     const attemptPlayerDelete = (player_id) => {
-        deletePlayer(game.current.game_code, player_id)
-        .then(() => {
-            // let remainingPlayers = updatedPlayers.filter(player => player.player_id !== player_id);
 
-            // setPlayers(remainingPlayers);
-            // updatedPlayers = remainingPlayers;
+        socket.emit("removal success", { 
+            removed_game_code: game.current.game_code, 
+            removed_player_id: player_id 
+        });
+        setTimeout(() => {  attemptLobbyRetrieval(game.game_code); }, 100);
+        
 
-            attemptLobbyRetrieval(game.game_code);
-
-            socket.emit("removal success", player_id);
-        })
-        .catch(error => handleError(error));
         //TODO: The user should receive an error modal if this becomes an error
     };
 
@@ -83,13 +78,11 @@ const GameLobby = () => {
      * @description Attempt to delete all players from the lobby given the game_code
      */
     const attemptAllPlayersDelete = () => {
-        deleteAllPlayers(game.current.game_code)
-        .then(() => {
-            socket.emit("removal success", "all");
-
-            navigate("/endgame");
-        })
-        .catch(error => handleError(error));
+        socket.emit("removal success", { 
+            removed_game_code: cached_game_code, 
+            removed_player_id: "all" 
+        });
+        navigate("/endgame");
         //TODO: The user should receive an error modal if this becomes an error
     };
 
@@ -124,7 +117,6 @@ const GameLobby = () => {
         console.error(error);
     };
 
-    //TODO: The game should be set to inactive and kick all players when the page is left
     /* When use tries to close tab, ask them if they are sure */
     window.addEventListener("beforeunload",  (e) => {
         e.preventDefault();
@@ -132,11 +124,19 @@ const GameLobby = () => {
         e.returnValue = '';
     });
 
+    window.addEventListener("unload", (e) => {
+        attemptAllPlayersDelete();
+    });
+
+    window.addEventListener("popstate", e => {  
+        attemptAllPlayersDelete();
+    });
+
     return (
         <Fragment>
             <h1>{game.current.game_code}</h1>
             <div class="container">
-                <button id="start_button">Start Game</button>
+                <button id="start_button" onClick={() => alert("Game Started")}>Start Game</button>
                 <button id="end_button" onClick={() => attemptAllPlayersDelete()}>End Game</button>
                 <div id="player_list">
                     <ul>
