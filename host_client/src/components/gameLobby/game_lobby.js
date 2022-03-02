@@ -42,18 +42,18 @@ const GameLobby = () => {
         attemptLobbyRetrieval(game.current.game_code);
 
         /* When a player has connected to the game, update the player list */
-        socket.on("player connected", () => {
+        socket.on("connected", () => {
             attemptLobbyRetrieval(game.current.game_code);
             console.debug("game_lobby - player joined socket room");
         });
 
         /* When a player chooses to leave game, remove them from lobby */
-        socket.on("player left game", player_id => {
+        socket.on("removal request", player_id => {
             attemptPlayerDelete(player_id);
         });
 
         /* When a player closed their tab, let us know */
-        socket.on("player disconnected", () => {
+        socket.on("disconnected", () => {
             console.debug("game_lobby - player left socket room");
         });
     };
@@ -63,27 +63,22 @@ const GameLobby = () => {
      * @param {string} player_id 
      */
     const attemptPlayerDelete = (player_id) => {
-
-        socket.emit("removal success", { 
+        socket.emit("removal accepted", { 
             removed_game_code: game.current.game_code, 
             removed_player_id: player_id 
         });
         setTimeout(() => {  attemptLobbyRetrieval(game.game_code); }, 100);
-        
-
-        //TODO: The user should receive an error modal if this becomes an error
     };
 
     /**
      * @description Attempt to delete all players from the lobby given the game_code
      */
     const attemptAllPlayersDelete = () => {
-        socket.emit("removal success", { 
+        socket.emit("removal accepted", { 
             removed_game_code: cached_game_code, 
             removed_player_id: "all" 
         });
         navigate("/endgame");
-        //TODO: The user should receive an error modal if this becomes an error
     };
 
     /**
