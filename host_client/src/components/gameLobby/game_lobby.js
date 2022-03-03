@@ -2,7 +2,7 @@ import React, { Fragment, useContext, useEffect, useState, useRef } from "react"
 import { useNavigate } from "react-router-dom";
 import { SocketContext } from "../../context/socket/socket";
 import { getGameCache } from "../../cache/game_cache";
-import { getAllPlayers, deletePlayer, deleteAllPlayers } from "./game_lobby_reqs";
+import { getAllPlayers } from "./game_lobby_reqs";
 import "./game_lobby.css"
 
 /**
@@ -78,8 +78,15 @@ const GameLobby = () => {
             removed_game_code: cached_game_code, 
             removed_player_id: "all" 
         });
-        navigate("/endgame");
     };
+
+    /**
+     *  @description NOTE: Possibly redundant. Remove all players / Set game to inactive / Navigate to the endgame page
+     */
+    const endGame = () => {
+        attemptAllPlayersDelete();
+        navigate("/endgame");
+    }
 
     /**
      * @description Attempt to retrieve a list of all players that are in the game lobby
@@ -112,17 +119,19 @@ const GameLobby = () => {
         console.error(error);
     };
 
-    /* When use tries to close tab, ask them if they are sure */
+    /* When user tries to close tab, ask them if they are sure */
     window.addEventListener("beforeunload",  (e) => {
         e.preventDefault();
         e.stopImmediatePropagation();
         e.returnValue = '';
     });
 
+    /* When user unloads the page, end the game */
     window.addEventListener("unload", (e) => {
         attemptAllPlayersDelete();
     });
 
+    /* When user presses the back button, close the game */
     window.addEventListener("popstate", e => {  
         attemptAllPlayersDelete();
     });
@@ -132,7 +141,7 @@ const GameLobby = () => {
             <h1>{game.current.game_code}</h1>
             <div class="container">
                 <button id="start_button" onClick={() => alert("Game Started")}>Start Game</button>
-                <button id="end_button" onClick={() => attemptAllPlayersDelete()}>End Game</button>
+                <button id="end_button" onClick={() => endGame()}>End Game</button>
                 <div id="player_list">
                     <ul>
                         { updatedPlayers.map(player => (
