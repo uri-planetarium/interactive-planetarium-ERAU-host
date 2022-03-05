@@ -1,7 +1,7 @@
 import React, { Fragment, useContext, useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { SocketContext } from "../../context/socket/socket";
-import { getGameCache } from "../../cache/game_cache";
+import { setGameCache, getGameCache } from "../../cache/game_cache";
 import { getAllPlayers } from "./game_lobby_reqs";
 import "./game_lobby.css"
 
@@ -24,6 +24,10 @@ const GameLobby = () => {
             is_active: cached_is_active,
             is_playing: cached_is_playing
         };
+
+        if (game.current.is_active === "false") {
+            navigate("/");
+        }
 
         createSocketRoom(game.current.game_code);
         let abortController = new AbortController();
@@ -74,6 +78,14 @@ const GameLobby = () => {
      * @description Attempt to delete all players from the lobby given the game_code
      */
     const attemptAllPlayersDelete = () => {
+        game.current.is_active = "false";
+
+        setGameCache({
+            game_code: cached_game_code,
+            is_active: "false",
+            is_playing: "false"
+        });
+
         socket.emit("removal accepted", { 
             removed_game_code: cached_game_code, 
             removed_player_id: "all" 
