@@ -23,6 +23,7 @@ const GameLobby = () => {
             navigate("/");
         } else {
             createSocketRoom(cached_game_code);
+
             let abortController = new AbortController();
     
             setupSocketListeners();
@@ -125,7 +126,7 @@ const GameLobby = () => {
     };
 
     /**
-     * @description Handle errors from the API connections
+     * @description Handle errors from th727747e API connections
      * @param {String} error 
      */
     //NOTE: Consider whether we even want a universal way to handle errors

@@ -13,7 +13,7 @@ const express = require("express"),
         credentials: false
     }),
     PORT = process.env.PORT || 5001
-    URL = (process.env.NODE_ENV === "production") ? "https://erau-interplanet-host.herokuapp.com/" : "http://localhost:5001";
+    URL = (process.env.NODE_ENV === "production") ? "https://erau-interplanet-host.herokuapp.com" : "http://localhost:5001";
 
 // middleware
 app.use(cors());
