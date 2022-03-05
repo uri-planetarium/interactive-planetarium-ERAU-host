@@ -77,7 +77,6 @@ io.on('connection', socket => {
         try {
             var response;
 
-            console.debug("~~~~~~~~~~~~~~~~~~~~~~~~~Attempting All players delete~~~~~~~~~~~~~~~~~~~~~~~~~");
             // If all players are removed, end the game. Else, just remove a player
             if (removed_player_id === "all") {
                 response = fetch(`${URL}/api/lobbys/${removed_game_code}`, {
@@ -92,7 +91,6 @@ io.on('connection', socket => {
                         "is_playing": "false" 
                     };
 
-                    console.debug("~~~~~~~~~~~~~~~~~~~~~~~~~Attempting Ending Game~~~~~~~~~~~~~~~~~~~~~~~~~");
                     response = fetch(`${URL}/api/games/${removed_game_code}`, {
                         method: "PUT",
                         headers: {"Content-Type": "application/json"},

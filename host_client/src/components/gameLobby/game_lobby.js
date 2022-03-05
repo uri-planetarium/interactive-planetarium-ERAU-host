@@ -27,16 +27,16 @@ const GameLobby = () => {
 
         if (game.current.is_active === "false") {
             navigate("/");
+        } else {
+            createSocketRoom(game.current.game_code);
+            let abortController = new AbortController();
+    
+            setupSocketListeners();
+    
+            return () => {
+                abortController.abort();
+            };
         }
-
-        createSocketRoom(game.current.game_code);
-        let abortController = new AbortController();
-
-        setupSocketListeners();
-
-        return () => {
-            abortController.abort();
-        };
     }, []);
 
     /**
@@ -78,8 +78,6 @@ const GameLobby = () => {
      * @description Attempt to delete all players from the lobby given the game_code
      */
     const attemptAllPlayersDelete = () => {
-        game.current.is_active = "false";
-
         setGameCache({
             game_code: cached_game_code,
             is_active: "false",
@@ -123,7 +121,7 @@ const GameLobby = () => {
     };
 
     /**
-     * @description Handle errors from the API connections
+     * @description Handle errors from th727747e API connections
      * @param {String} error 
      */
     //NOTE: Consider whether we even want a universal way to handle errors
