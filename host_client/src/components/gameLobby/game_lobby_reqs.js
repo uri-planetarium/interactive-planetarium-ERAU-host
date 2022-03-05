@@ -68,4 +68,33 @@ const deleteAllPlayers = async (game_code) => {
     }
 };
 
-export { getAllPlayers, deletePlayer, deleteAllPlayers };
+/**
+ * @description Attempt to update the state of the game given the game_code, is_active, and is_playing
+ * @param {string} game_code 
+ * @returns Either a message confirming the game update or an error Json object
+ */
+const updateGame = async (game_code, is_active, is_playing) => {
+    const body = { 
+        "is_active": is_active, 
+        "is_playing": is_playing 
+    };
+
+    try {
+        const response = fetch(`./api/games/${game_code}`, {
+            method: "PUT",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(body)
+        })
+        .then(response => response.json());
+
+        if (!response.error) {
+            return response;
+        } else {
+            throw new Error(response.error.code);
+        }
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
+export { getAllPlayers, deletePlayer, deleteAllPlayers, updateGame };
