@@ -13,7 +13,7 @@ const express = require("express"),
         credentials: false
     }),
     PORT = process.env.PORT || 5001
-    URL = (process.env.NODE_ENV === "production") ? "https://erau-interplanet-host.herokuapp.com/" : "http://localhost:5001";
+    URL = (process.env.NODE_ENV === "production") ? "https://erau-interplanet-host.herokuapp.com" : "http://localhost:5001";
 
 // middleware
 app.use(cors());
@@ -73,54 +73,54 @@ io.on('connection', socket => {
     });
 
     /* When player removal has been accepted, remove the player */
-    // socket.on("removal accepted", ({ removed_game_code, removed_player_id }) => {
-    //     try {
-    //         var response;
+    socket.on("removal accepted", ({ removed_game_code, removed_player_id }) => {
+        try {
+            var response;
 
-    //         // If all players are removed, end the game. Else, just remove a player
-    //         if (removed_player_id === "all") {
-    //             response = fetch(`${URL}/api/lobbys/${removed_game_code}`, {
-    //                 method: "DELETE"
-    //             })
-    //             .then(response => response.json());
+            // If all players are removed, end the game. Else, just remove a player
+            if (removed_player_id === "all") {
+                response = fetch(`${URL}/api/lobbys/${removed_game_code}`, {
+                    method: "DELETE"
+                })
+                .then(response => response.json());
 
-    //             // If the removal all players query was a success, update the game to be inactive
-    //             if  (!response.error) {
-    //                 const body = { 
-    //                     "is_active": "false", 
-    //                     "is_playing": "false" 
-    //                 };
+                // If the removal all players query was a success, update the game to be inactive
+                if  (!response.error) {
+                    const body = { 
+                        "is_active": "false", 
+                        "is_playing": "false" 
+                    };
 
-    //                 response = fetch(`${URL}/api/games/${removed_game_code}`, {
-    //                     method: "PUT",
-    //                     headers: {"Content-Type": "application/json"},
-    //                     body: JSON.stringify(body)
-    //                 })
-    //             } else {
-    //                 console.error(response.error.code);
-    //             }
-    //         } else {
-    //             response = fetch(`${URL}/api/lobbys/${removed_game_code}/${removed_player_id}`, {
-    //                 method: "DELETE"
-    //             })
-    //             .then(response => response.json());
-    //         }
+                    response = fetch(`${URL}/api/games/${removed_game_code}`, {
+                        method: "PUT",
+                        headers: {"Content-Type": "application/json"},
+                        body: JSON.stringify(body)
+                    })
+                } else {
+                    console.error(response.error.code);
+                }
+            } else {
+                response = fetch(`${URL}/api/lobbys/${removed_game_code}/${removed_player_id}`, {
+                    method: "DELETE"
+                })
+                .then(response => response.json());
+            }
     
-    //         // If the removal was a success, send a message to the players that they have been removed 
-    //         if  (!response.error) {
-    //             socket.to(gameCode).emit("removed", { 
-    //                 removed_game_code: removed_game_code, 
-    //                 removed_player_id: removed_player_id 
-    //             });
+            // If the removal was a success, send a message to the players that they have been removed 
+            if  (!response.error) {
+                socket.to(gameCode).emit("removed", { 
+                    removed_game_code: removed_game_code, 
+                    removed_player_id: removed_player_id 
+                });
 
-    //             console.debug(` - User ${playerID} accepted request to leave game ${gameCode}`);
-    //         } else {
-    //             console.error(response.error.code);
-    //         }
-    //     } catch (error) {
-    //         console.error(error.message);
-    //     }
-    // });
+                console.debug(` - User ${playerID} accepted request to leave game ${gameCode}`);
+            } else {
+                console.error(response.error.code);
+            }
+        } catch (error) {
+            console.error(error.message);
+        }
+    });
 
     /* When player chooses to leave room, remove them */
     socket.on("leave room", () => {
