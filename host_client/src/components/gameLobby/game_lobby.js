@@ -2,7 +2,7 @@ import React, { Fragment, useContext, useEffect, useState, useRef } from "react"
 import { useNavigate } from "react-router-dom";
 import { SocketContext } from "../../context/socket/socket";
 import { setGameCache, getGameCache } from "../../cache/game_cache";
-import { getAllPlayers } from "./game_lobby_reqs";
+import { getAllPlayers, deletePlayer, deleteAllPlayers, updateGame } from "./game_lobby_reqs";
 import "./game_lobby.css"
 
 /**
@@ -13,41 +13,35 @@ const GameLobby = () => {
     const socket = useContext(SocketContext);
     const navigate = useNavigate();
     const [ players, setPlayers ] = useState([]);
-    const game = useRef({});
     var updatedPlayers = players;
     const { cached_game_code, cached_is_active, cached_is_playing } = getGameCache().data;
 
     //FIXME: This has caused "Unmounted" errors in the past
     useEffect(() => {
-        game.current = {
-            game_code: cached_game_code,
-            is_active: cached_is_active,
-            is_playing: cached_is_playing
-        };
 
-        if (game.current.is_active === "false") {
+        if (cached_is_active === "false") {
             navigate("/");
+        } else {
+            createSocketRoom(cached_game_code);
+            let abortController = new AbortController();
+    
+            setupSocketListeners();
+    
+            return () => {
+                abortController.abort();
+            };
         }
-
-        createSocketRoom(game.current.game_code);
-        let abortController = new AbortController();
-
-        setupSocketListeners();
-
-        return () => {
-            abortController.abort();
-        };
     }, []);
 
     /**
      * @description Connect to the socket context and begin listening for players joining the room
      */
     const setupSocketListeners = () => {
-        attemptLobbyRetrieval(game.current.game_code);
+        attemptLobbyRetrieval(cached_game_code);
 
         /* When a player has connected to the game, update the player list */
         socket.on("connected", () => {
-            attemptLobbyRetrieval(game.current.game_code);
+            attemptLobbyRetrieval(cached_game_code);
             console.debug("game_lobby - player joined socket room");
         });
 
@@ -67,29 +61,39 @@ const GameLobby = () => {
      * @param {string} player_id 
      */
     const attemptPlayerDelete = (player_id) => {
-        socket.emit("removal accepted", { 
-            removed_game_code: game.current.game_code, 
-            removed_player_id: player_id 
-        });
-        setTimeout(() => {  attemptLobbyRetrieval(game.game_code); }, 100);
+        deletePlayer(cached_game_code, player_id)
+        .then(() => {
+            socket.emit("removal accepted", { 
+                removed_game_code: cached_game_code, 
+                removed_player_id: player_id 
+            });
+            attemptLobbyRetrieval(cached_game_code);
+        })
+        .catch(error => handleError(error));
     };
 
     /**
      * @description Attempt to delete all players from the lobby given the game_code
      */
     const attemptAllPlayersDelete = () => {
-        game.current.is_active = "false";
-
         setGameCache({
             game_code: cached_game_code,
             is_active: "false",
             is_playing: "false"
         });
 
-        socket.emit("removal accepted", { 
-            removed_game_code: cached_game_code, 
-            removed_player_id: "all" 
-        });
+        deleteAllPlayers(cached_game_code)
+        .then(() => {
+            updateGame(cached_game_code, "false", "false")
+            .then(() => {
+                socket.emit("removal accepted", { 
+                    removed_game_code: cached_game_code, 
+                    removed_player_id: "all" 
+                });
+            })
+            .catch(error => handleError(error));
+        })
+        .catch(error => handleError(error));
     };
 
     /**
@@ -104,7 +108,7 @@ const GameLobby = () => {
      * @description Attempt to retrieve a list of all players that are in the game lobby
      */
     const attemptLobbyRetrieval = () => {
-        getAllPlayers(game.current.game_code)
+        getAllPlayers(cached_game_code)
         .then(allPlayers => {
             setPlayers(allPlayers);
             updatedPlayers = allPlayers;
@@ -118,8 +122,6 @@ const GameLobby = () => {
      */
     const createSocketRoom = (game_code) => {
         socket.emit("join room", game_code, "Host");
-
-        console.debug(`create_game - joined room ${game_code}`);
     };
 
     /**
@@ -140,7 +142,11 @@ const GameLobby = () => {
 
     /* When user unloads the page, end the game */
     window.addEventListener("unload", (e) => {
-        attemptAllPlayersDelete();
+        setGameCache({
+            game_code: cached_game_code,
+            is_active: "false",
+            is_playing: "false"
+        });
     });
 
     /* When user presses the back button, close the game */
@@ -150,7 +156,7 @@ const GameLobby = () => {
 
     return (
         <Fragment>
-            <h1>{game.current.game_code}</h1>
+            <h1>{cached_game_code}</h1>
             <div class="container">
                 <button id="start_button" onClick={() => alert("Game Started")}>Start Game</button>
                 <button id="end_button" onClick={() => endGame()}>End Game</button>
