@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import pRetry from "p-retry";
 import { setGameCache } from "../../cache/game_cache";
 import { makeGame } from "./create_game_reqs";
-
 // Constants
 const GAME_CREATE_RETRIES = 10;
+
 
 /**
  * @description the CreateGame component for the host_client
@@ -14,6 +14,9 @@ const GAME_CREATE_RETRIES = 10;
 const CreateGame = () => {
     const navigate = useNavigate();
 
+    const manageQuizzes = () => {
+        navigate("/quizzes");
+    }
     /**
      * @description Randomly generate a 6 digit game_code
      * @returns Integer
@@ -71,6 +74,7 @@ const CreateGame = () => {
         <Fragment>
             <h1>What would you like to do?</h1>
             <button onClick={gameRegister}>Create Game</button>
+            <button onClick={manageQuizzes}>Manage Quizzes Game</button>
         </Fragment>
     );
 };

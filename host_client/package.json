@@ -6,6 +6,7 @@
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
+    "daisyui": "^2.13.4",
     "p-retry": "^5.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -40,6 +41,9 @@
   },
   "proxy": "http://localhost:5001",
   "devDependencies": {
-    "mini-css-extract-plugin": "2.4.5"
+    "autoprefixer": "^10.4.4",
+    "mini-css-extract-plugin": "2.4.5",
+    "postcss": "^8.4.12",
+    "tailwindcss": "^3.0.24"
   }
 }

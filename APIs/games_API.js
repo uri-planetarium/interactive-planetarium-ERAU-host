@@ -2,7 +2,7 @@ module.exports = function(app, pool, path) {
     /* POST (CREATE) */
     /* Create a new game */
     app.post("/api/games", async (req, res) => {
-        try {
+        try { 
             const { game_code } = req.body;
 
             pool.query (
@@ -24,7 +24,7 @@ module.exports = function(app, pool, path) {
         }
     });
 
-    /* GET (READ) */
+    /* GET (READ) */ 
     /* Get the data of a specific game lobby */
     app.get("/api/games/:game_code", async (req,res) => {
         try {
